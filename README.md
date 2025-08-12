@@ -25,18 +25,29 @@ Qonductor is a cloud orchestrator for hybrid quantum-classical applications runn
 
 ## Project Structure
 
-### 'data/':  Datasets, benchmarks, trained models, results
-### 'src/': Source code 
-- 'analysis/': Scripts to reproduce paper figures
-    - 'ibm_status_analysis.py': C1 (Figure 2) – IBM QPU status analysis
-    - 'e2e_performance.py': C2 (Figure 6) – End-to-end performance plots
-    - 'estimator_analysis.py': C3 (Figure 7) – Resource estimator evaluation
-    - 'scheduler_analysis.py': C4 (Figure 10) – Scheduler performance
-    - 'scheduling_manager_analysis.py': C4, C5 (Figures 8, 9) – More scheduler performance and scalability
-- 'scheduler': Scheduling logic and hybrid orchestration
-- 'optimization': Pareto-optimal optimization code for scheduling
-- 'execution_time': Execution time prediction models
-- 'scheduling_manager': Scheduling simulation framework
-- 'utils': Helper functions and common utilities
-### 'install.sh': Installation script for dependencies
-### 'requirements.txt': Python dependencies
+### `data/`:  Datasets, benchmarks, trained models, results
+### `src/`: Source code 
+- `analysis/`: Scripts to reproduce paper figures
+    - `ibm_status_analysis.py`: C1 (Figure 2) – IBM QPU status analysis
+    - `e2e_performance.py`: C2 (Figure 6) – End-to-end performance plots
+    - `estimator_analysis.py`: C3 (Figure 7) – Resource estimator evaluation
+    - `scheduler_analysis.py`: C4 (Figure 10) – Scheduler performance
+    - `scheduling_manager_analysis.py`: C4, C5 (Figures 8, 9) – More scheduler performance and scalability
+- `scheduler`: Scheduling logic and hybrid orchestration
+- `optimization`: Pareto-optimal optimization code for scheduling
+- `execution_time`: Execution time prediction models
+- `scheduling_manager`: Scheduling simulation framework
+- `utils`: Helper functions and common utilities
+### `install.sh`: Installation script for dependencies
+### `requirements.txt`: Python dependencies
+
+## Examples
+### Reproduce Figure 6 – E2E performance
+```bash
+python src/analysis/e2e_performance.py
+```
+
+### Run resource estimator analysis (Figure 7)
+```bash
+python src/analysis/estimator_analysis.py
+```
