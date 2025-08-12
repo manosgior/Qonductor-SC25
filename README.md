@@ -41,6 +41,18 @@ Qonductor is a cloud orchestrator for hybrid quantum-classical applications runn
 ### `install.sh`: Installation script for dependencies
 ### `requirements.txt`: Python dependencies
 
+## **Installation**
+```bash
+# Clone repository
+git clone https://github.com/manosgior/Qonductor-SC25.git
+cd Qonductor-SC25
+
+# Install dependencies
+bash install.sh
+
+# Set Python path
+export PYTHONPATH=.
+
 ## Examples
 ### Reproduce Figure 6 – E2E performance
 ```bash
