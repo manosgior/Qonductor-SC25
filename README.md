@@ -52,6 +52,7 @@ bash install.sh
 
 # Set Python path
 export PYTHONPATH=.
+```
 
 ## Examples
 ### Reproduce Figure 6 – E2E performance
