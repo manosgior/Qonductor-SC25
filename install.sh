@@ -9,5 +9,3 @@ source ../quantum-scheduler/bin/activate
 # Install dependencies from requirements.txt
 pip install -r requirements.txt
 
-# Deactivate the virtual environment
-deactivate
