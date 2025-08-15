@@ -5,15 +5,11 @@ from typing import Any
 
 import numpy
 from mqt.bench import get_benchmark
-from mqt.bench.utils import get_supported_benchmarks
 from numpy import argmin
 from qiskit import transpile, QuantumCircuit
 from qiskit.providers import Backend
-from qiskit.providers.fake_provider import FakeProviderForBackendV2
-from qiskit.providers.fake_provider.fake_backend import FakeBackendV2
-from qiskit.providers.models import BackendStatus, BackendProperties
-from qiskit.transpiler.target import target_to_backend_properties
-from qiskit_ibm_provider import IBMProvider
+from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit_ibm_runtime.models import BackendStatus, BackendProperties
 from retry import retry
 
 from src.scheduler.base_scheduler import SchedulingJob
@@ -46,19 +42,7 @@ def get_benchmark_names() -> list[str]:
         "grover-v-chain",
         "grover-noancilla",
     ]
-    benchmarks = get_supported_benchmarks()
-    benchmarks = set(benchmarks).difference(excluded_benchmarks)
-    return sorted(benchmarks)
-
-
-def get_available_backends() -> list[Backend]:
-    """
-    Get all available backends from IBM Quantum
-    :return: List of available backends
-    """
-    provider = IBMProvider()
-    backends = provider.backends(simulator=False, operational=True)
-    return sorted(backends, key=lambda backend: backend.name)
+    return None
 
 
 def patch_fake_backend() -> None:
@@ -90,8 +74,6 @@ def patch_fake_backend() -> None:
         self._waiting_time_timestamp = current_timestamp
         return self._waiting_time
 
-    def properties(self) -> BackendProperties:
-        return target_to_backend_properties(self.target)
 
     def status(self) -> BackendStatus:
         return BackendStatus(
@@ -105,16 +87,16 @@ def patch_fake_backend() -> None:
     def processor_type(self) -> dict[str, Any]:
         return self._conf_dict.get("processor_type")
 
-    FakeBackendV2.properties = properties
-    FakeBackendV2.status = status
-    FakeBackendV2.update_waiting_time = update_waiting_time
-    FakeBackendV2.get_waiting_time = get_waiting_time
-    FakeBackendV2.pending_jobs = 0
-    FakeBackendV2.max_shots = 4000
-    FakeBackendV2.default_rep_delay = 0.0
-    FakeBackendV2._waiting_time = 0
-    FakeBackendV2._waiting_time_timestamp = dt.datetime.now(dt.timezone.utc)
-    FakeBackendV2.processor_type = property(processor_type)
+    GenericBackendV2.properties = properties
+    GenericBackendV2.status = status
+    GenericBackendV2.update_waiting_time = update_waiting_time
+    GenericBackendV2.get_waiting_time = get_waiting_time
+    GenericBackendV2.pending_jobs = 0
+    GenericBackendV2.max_shots = 4000
+    GenericBackendV2.default_rep_delay = 0.0
+    GenericBackendV2._waiting_time = 0
+    GenericBackendV2._waiting_time_timestamp = dt.datetime.now(dt.timezone.utc)
+    GenericBackendV2.processor_type = property(processor_type)
 
 
 def get_fake_backends(remove_retired: bool = False) -> list[Backend]:
@@ -123,10 +105,9 @@ def get_fake_backends(remove_retired: bool = False) -> list[Backend]:
     :param remove_retired: Whether to remove retired backends
     :return: List of fake backends
     """
-    if not hasattr(FakeBackendV2, "properties"):
+    if not hasattr(GenericBackendV2, "properties"):
         patch_fake_backend()
 
-    fake_provider = FakeProviderForBackendV2()
     available_backends = [
         "sherbrooke",
         "kyiv",
@@ -146,7 +127,6 @@ def get_fake_backends(remove_retired: bool = False) -> list[Backend]:
         "quebec",
         "torino",
     ]
-    backends = fake_provider.backends()
     backends = [
         backend
         for backend in backends

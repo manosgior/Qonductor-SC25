@@ -48,7 +48,10 @@ git clone https://github.com/manosgior/Qonductor-SC25.git
 cd Qonductor-SC25
 
 # Install dependencies
-bash install.sh
+sh install.sh
+
+# Enable the virtual environment (assumes that the venv directory is one level above, as the install script creates it)
+source ../quantum-scheduler/bin/activate
 
 # Set Python path
 export PYTHONPATH=.

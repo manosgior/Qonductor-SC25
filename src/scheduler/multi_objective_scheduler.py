@@ -28,7 +28,7 @@ from pymoo.optimize import minimize
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit import Measure, Reset, Gate
 from qiskit.providers import Backend
-from qiskit.providers.fake_provider.fake_backend import FakeBackendV2
+from qiskit_ibm_runtime.fake_provider import *
 
 from src.execution_time.base_estimator import BaseEstimator
 from src.execution_time.regression_estimator import RegressionEstimator

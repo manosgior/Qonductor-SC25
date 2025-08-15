@@ -9,65 +9,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt, gridspec
-from qiskit_ibm_provider import IBMProvider
+
 
 from src.utils import plot
 
 logger = logging.getLogger(__name__)
-
-
-def monitor_ibm_status(
-    account: str,
-    period: int,
-    duration: dt.timedelta,
-    data_folder: pathlib.Path,
-) -> None:
-    """
-    Monitor the status of IBM Quantum backends for a given account
-    :param account: IBM Quantum account
-    :param period: Time between measurements in seconds
-    :param duration: Duration of load monitoring
-    :param data_folder: Folder to save the data to
-    """
-    logger.info("Monitoring load on IBM Quantum for account %s", account)
-    provider = IBMProvider(name=account)
-    backends = provider.backends(simulator=False)
-    flush_period = dt.timedelta(hours=1)
-    flush_time = dt.datetime.now(dt.timezone.utc) + flush_period
-    monitoring_time = dt.datetime.now(dt.timezone.utc) + duration
-    monitoring_data = []
-    data_folder.mkdir(parents=True, exist_ok=True)
-    while dt.datetime.now(dt.timezone.utc) < monitoring_time:
-        iteration_start = dt.datetime.now(dt.timezone.utc)
-        logger.info("Monitoring iteration at %s", iteration_start)
-        for backend in backends:
-            monitoring_data.append(
-                {
-                    "backend": backend.name,
-                    "status": backend.status().to_dict(),
-                    "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
-                }
-            )
-        if dt.datetime.now(dt.timezone.utc) > flush_time:
-            file_path = data_folder / (flush_time.isoformat() + ".json")
-            logger.info("Flushing data to %s", file_path)
-            with open(file_path, "w+") as file:
-                json.dump(monitoring_data, file)
-            flush_time = dt.datetime.now(dt.timezone.utc) + flush_period
-            monitoring_data = []
-        iteration_end = dt.datetime.now(dt.timezone.utc)
-        if iteration_end - iteration_start < dt.timedelta(seconds=period):
-            time.sleep(
-                period - (iteration_end - iteration_start).total_seconds()
-            )
-
-    file_path = data_folder / (
-        dt.datetime.now(dt.timezone.utc).isoformat() + ".json"
-    )
-    logger.info("Flushing data to %s", file_path)
-    with open(file_path, "w+") as file:
-        json.dump(monitoring_data, file)
-    logger.info("Monitoring finished")
 
 
 def analyze_job_frequency(

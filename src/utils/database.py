@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Generator, Sequence
 
 from qiskit import QuantumCircuit
-from qiskit_ibm_provider import IBMProvider, IBMJob
+from qiskit_ibm_runtime import QiskitRuntimeService, RuntimeJob
 from sqlalchemy import create_engine, ForeignKey, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, relationship, Session
 from sqlalchemy.orm import mapped_column
@@ -62,7 +62,7 @@ engine = create_engine(DATABASE_URI, echo=False)
 Base.metadata.create_all(engine)
 
 
-def save_job_to_database(qiskit_job: IBMJob):
+def save_job_to_database(qiskit_job: RuntimeJob):
     """
     Save Qiskit job to the database
     :param qiskit_job: Job to be saved
@@ -111,7 +111,7 @@ def get_jobs_from_database() -> Sequence[Job]:
         return session.scalars(select(Job)).all()
 
 
-def check_job_exists(qiskit_job: IBMJob) -> bool:
+def check_job_exists(qiskit_job: RuntimeJob) -> bool:
     """
     Check if job is in database
     :param qiskit_job: Job to be checked
@@ -129,17 +129,17 @@ def check_job_exists(qiskit_job: IBMJob) -> bool:
 def extract_jobs_from_ibm_quantum(
     batch_size: int = 10,
     account_name: str | None = None,
-) -> Generator[IBMJob, None, None]:
+) -> Generator[RuntimeJob, None, None]:
     """
     Iteratively extract all jobs from IBM Quantum
     :param batch_size: Batch size
     :param account_name: Name of the account
     :return: List of jobs
     """
-    provider = IBMProvider(name=account_name)
+    service = QiskitRuntimeService()
     skip = 0
     while True:
-        jobs = provider.jobs(limit=batch_size, skip=skip, status="completed")
+        jobs = service.jobs(limit=batch_size, skip=skip, status="completed")
         if len(jobs) == 0:
             break
         yield from [job for job in jobs if job.done()]
